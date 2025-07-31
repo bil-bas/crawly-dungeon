@@ -4,11 +4,6 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "key"
     },
-    "image3": {
-        "data": "hwQQABAAAAAAAAAAAAAAAAAAzAAAAAAAAMC7//8A7gAAwFv1/+/rAAC8VVX/7/wMAMy7VRv7W/vAXLVb/+tV9bxVVVu+61v1XFVVW77rW/XMXLVb/+tV9QDMu1Ub+1v7AMxVVf/v/wwAwFv1/+/rAADAu/z/AO4AAADMAAAAAAAAAAAAAAAAAA==",
-        "mimeType": "image/x-mkcd-f4",
-        "displayName": "witchForward0"
-    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",
