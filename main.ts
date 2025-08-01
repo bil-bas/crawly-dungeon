@@ -162,8 +162,8 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(
 // Initialisation
 
 // Creat player sprite.
-function create_wizard(): Sprite {
-    let wiz = sprites.create(assets.image`wizard`, SpriteKind.Player)
+function create_player(): Sprite {
+    let wiz = sprites.create(assets.image`player`, SpriteKind.Player)
     info.setLife(3)
     scene.cameraFollowSprite(wiz)
     characterAnimations.loopFrames(wiz, [img`
@@ -523,7 +523,7 @@ function render_walls() {
         if (tiles.tileAtLocationIsWall(location)) {
             tiles.setTileAt(location, sprites.builtin.brick)
         } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLarge)) {
-            tiles.placeOnTile(wizard, location)
+            tiles.placeOnTile(player, location)
             clearTile(location)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object4)) {
             create_bat(location)
@@ -584,11 +584,11 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
     mana -= FIREBALL_COST
     update_labels()
 
-    if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingRight)) ||
-        characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
-        projectile = sprites.createProjectileFromSprite(assets.image`fireball right`, wizard, 100, 0)
-    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingLeft)) ||
-        characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingLeft))) {
+    if (characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.MovingRight)) ||
+        characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingRight))) {
+        projectile = sprites.createProjectileFromSprite(assets.image`fireball right`, player, 100, 0)
+    } else if (characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.MovingLeft)) ||
+        characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingLeft))) {
         projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -606,9 +606,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
-                `, wizard, -100, 0)
-    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingUp)) ||
-        characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingUp))) {
+                `, player, -100, 0)
+    } else if (characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.MovingUp)) ||
+        characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingUp))) {
         projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -626,9 +626,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
                 . . . . . . 3 1 3 . . . . . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
-                `, wizard, 0, -100)
-    } else if (characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.MovingDown)) ||
-        characterAnimations.matchesRule(wizard, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown))) {
+                `, player, 0, -100)
+    } else if (characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.MovingDown)) ||
+        characterAnimations.matchesRule(player, characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown))) {
         projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
@@ -646,7 +646,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
                 . . . . . 2 1 1 1 1 2 . . . . .
                 . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . .
-                `, wizard, 0, 100)
+                `, player, 0, 100)
     }
 
     projectile.startEffect(effects.trail)
@@ -670,7 +670,7 @@ function Starfire() {
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-    `, wizard, 100, 0)
+    `, player, 100, 0)
     projectile.startEffect(effects.trail)
 
     projectile = sprites.createProjectileFromSprite(img`
@@ -690,7 +690,7 @@ function Starfire() {
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-            `, wizard, -100, 0)
+            `, player, -100, 0)
     projectile.startEffect(effects.trail)
 
     projectile = sprites.createProjectileFromSprite(img`
@@ -710,7 +710,7 @@ function Starfire() {
             . . . . . . 3 1 3 . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-            `, wizard, 0, -100)
+            `, player, 0, -100)
     projectile.startEffect(effects.trail)
 
     projectile = sprites.createProjectileFromSprite(img`
@@ -730,7 +730,7 @@ function Starfire() {
             . . . . . 2 1 1 1 1 2 . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-            `, wizard, 0, 100)
+            `, player, 0, 100)
     projectile.startEffect(effects.trail)
 }
 
@@ -1838,9 +1838,9 @@ function update_labels() {
 
 function advance_level() {
     current_level += 1
-    wizard.setScale(1, ScaleAnchor.Middle)
-    controller.moveSprite(wizard, 60, 60)
-    tiles.setCurrentTilemap(levels[current_level])
+    player.setScale(1, ScaleAnchor.Middle)
+    controller.moveSprite(player, 60, 60)
+    tiles.setCurrentTilemap(LEVELS[current_level])
     render_walls()
 }
 
