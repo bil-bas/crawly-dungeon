@@ -235,7 +235,7 @@ function render_walls() {
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
             create_hermit_crab(location)
         } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) ||
-            tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) ||
+            tiles.tileAtLocationEquals(location, sprites.dungeon.doorLockedNorth) ||
             tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
             tiles.setWallAt(location, true)
         }
@@ -244,7 +244,7 @@ function render_walls() {
 
 // Enemy interactions
 
-scene.onHitWall(SpriteKind.HermitCrab, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
+scene.onHitWall(SpriteKind.HermitCrab, (sprite: Sprite, location: tiles.Location) => {
     if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
         sprite.setVelocity(-30, 0)
     } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
@@ -259,7 +259,7 @@ scene.onHitWall(SpriteKind.HermitCrab, function on_hit_wall2(sprite: Sprite, loc
 // Casting spells
 
 // Cast starfire pulses
-controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
+controller.B.onEvent(ControllerButtonEvent.Pressed, () => {
     if (mana < STARFIRE_COST || is_falling) return
 
     mana -= STARFIRE_COST
@@ -267,17 +267,17 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
 
     Starfire()
 
-    timer.after(200, function on_after() {
+    timer.after(200, () => {
         Starfire()
 
-        timer.after(200, function on_after2() {
+        timer.after(200, () => {
             Starfire()
         })
     })
 })
 
 // Cast fireball
-controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
+controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
     let projectile: Sprite
 
     if (mana < FIREBALL_COST || is_falling) return
@@ -438,19 +438,19 @@ function Starfire() {
 // Spell effects
 
 // Fireball hits GHOST
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, function on_on_overlap5(sprite: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Ghost, (sprite: Sprite, otherSprite: Sprite) => {
     sprites.destroy(sprite)
     sprites.destroy(otherSprite, effects.fire, 100)
 })
 
 // Fireball hits BAT
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6(sprite: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, (sprite: Sprite, otherSprite: Sprite) => {
     sprites.destroy(sprite)
     sprites.destroy(otherSprite, effects.fire, 100)
 })
 
 // Fireball hits SNAIL
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.HermitCrab, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.HermitCrab, (sprite: Sprite, otherSprite: Sprite) => {
     sprites.destroy(sprite)
 })
 
@@ -1865,14 +1865,14 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, (sprite: Spri
         controller.moveSprite(sprite, 0, 0)
         tiles.placeOnTile(sprite, location)
 
-        timer.after(250, function on_after4() {
+        timer.after(250, () => {
             music.play(music.melodyPlayable(music.jumpDown), music.PlaybackMode.InBackground)
             sprite.setScale(0.75, ScaleAnchor.Middle)
 
-            timer.after(500, function on_after5() {
+            timer.after(500, () => {
                 sprite.setScale(0.5, ScaleAnchor.Middle)
 
-                timer.after(500, function on_after6() {
+                timer.after(500, () => {
                     advance_level()
                     is_falling = false
                 })
