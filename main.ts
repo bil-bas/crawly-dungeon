@@ -1,5 +1,5 @@
 namespace SpriteKind {
-    export const Snail = SpriteKind.create()
+    export const HermitCrab = SpriteKind.create()
     export const Ghost = SpriteKind.create()
     export const Bat = SpriteKind.create()
     export const Monkey = SpriteKind.create()
@@ -14,13 +14,13 @@ function clearTile(location: tiles.Location) {
 
 // Indicate a chage with floating message.
 function change_floater(icon: Image, change: number) {
-    let textSprite = textsprite.create((change > 0 ? "+" : "") + ("" + change))
-    textSprite.setMaxFontHeight(5)
-    textSprite.setIcon(icon)
-    textSprite.z = 99
-    textSprite.setPosition(player.x, player.y)
+    let text = textsprite.create((change > 0 ? "+" : "") + ("" + change))
+    text.setMaxFontHeight(5)
+    text.setIcon(icon)
+    text.z = 99
+    text.setPosition(player.x, player.y)
     timer.after(500, () => {
-        sprites.destroy(textSprite)
+        sprites.destroy(text)
     })
 }
 
@@ -38,7 +38,7 @@ function create_label(icon: Image, x: number) {
 // Player Overlaps - PICK UP
 
 // Player picks up LIFE POTION
-scene.onOverlapTile(SpriteKind.Player, assets.tile`key`, function on_overlap_tile(sprite: Sprite, location: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`key`, (sprite: Sprite, location: tiles.Location) => {
     clearTile(location)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     info.changeLifeBy(1)
@@ -53,7 +53,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`key`, (sprite, location) => {
 })
 
 // Player picks up KEY
-scene.onOverlapTile(SpriteKind.Player, assets.tile`key`, function on_overlap_tile2(sprite: Sprite, location: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`key`, (sprite: Sprite, location: tiles.Location) => {
     clearTile(location)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     keys += 1
@@ -82,9 +82,9 @@ scene.onHitWall(SpriteKind.Player, (sprite: Sprite, location: tiles.Location) =>
 // Player Overlaps ENEMY
 
 // Player overlaps SNAIL
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Snail, (sprite: Sprite, otherSprite: Sprite) => {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.HermitCrab, (sprite: Sprite, otherSprite: Sprite) => {
     music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
-    game.setGameOverMessage(false, "Slimed by the boss snail!")
+    game.setGameOverMessage(false, "Squished by the hermit crab!")
     info.changeLifeBy(-10)
 })
 
@@ -98,7 +98,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, (sprite: Sprite, otherSprit
 })
 
 // Player overlaps GHOST
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(sprite: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, (sprite: Sprite, otherSprite: Sprite) => {
     music.play(music.melodyPlayable(music.spooky), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite)
     if (mana) {
@@ -114,7 +114,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ghost, function on_on_overlap3(s
 })
 
 // Player overlaps MONKEY
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(sprite7: Sprite, otherSprite4: Sprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, (sprite7: Sprite, otherSprite4: Sprite) => {
     music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
     sprites.destroy(otherSprite4)
     if (keys) {
@@ -162,366 +162,67 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Monkey, function on_on_overlap4(
 // Initialisation
 
 // Creat player sprite.
-function create_player(): Sprite {
-    let wiz = sprites.create(assets.image`player`, SpriteKind.Player)
+function create_player() : Sprite {
+    let wiz = sprites.create(sprites.swamp.witchForward0, SpriteKind.Player)
     info.setLife(3)
     scene.cameraFollowSprite(wiz)
-    characterAnimations.loopFrames(wiz, [img`
-        . . . . . . c c c . . . . . . .
-        . . . . . . c 5 b c . . . . . .
-        . . . . c c c 5 5 c c c . . . .
-        . . c c c c 5 5 5 5 c b c c . .
-        . c b b 5 b 5 5 5 5 b 5 b b c .
-        . c b 5 5 b b 5 5 b b 5 5 b c .
-        . . c 5 5 5 b b b b 5 5 5 f . .
-        . . f f 5 5 5 5 5 5 5 5 f f . .
-        . . f f f f f f f f f f f f . .
-        . . f f f f f f f f f f f f . .
-        . . . f f f f f f f f f f . . .
-        . . . e e f f f f f f f e . . .
-        . . e b f b 5 b b 5 b c b e . .
-        . . e e f 5 5 5 5 5 5 f e e . .
-        . . . . c b 5 5 5 5 b c . . . .
-        . . . . . f f f f f f . . . . .
-    `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . c c . . . . . .
-                . . . . . . . c 5 c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f f f f f f f f f f . .
-                . . f f f f f f f f f f f f . .
-                . . . f f f f f f f f f f . . .
-                . . . e b e e f f f f b b e . .
-                . . . e b b e b b 5 5 f e e . .
-                . . . . c e e 5 5 5 5 5 f . . .
-                . . . . . f f f f f f f . . . .
-                `, img`
-                . . . . . . . c c c . . . . . .
-                . . . . . . c b 5 c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f f f f f f f f f f . .
-                . . f f f f f f f f f f f f . .
-                . . . f f f f f f f f f f . . .
-                . . . e e f f f f f f e e . . .
-                . . e b c b 5 b b 5 b f b e . .
-                . . e e f 5 5 5 5 5 5 f e e . .
-                . . . . c b 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . c c . . . . . . . .
-                . . . . . . c 5 c . . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f f f f f f f f f f . .
-                . . f f f f f f f f f f f f . .
-                . . . f f f f f f f e e f . . .
-                . . e b b f e e e e e b e . . .
-                . . e e f 5 5 b b e b b e . . .
-                . . . f 5 5 5 5 5 e e c . . . .
-                . . . . f f f f f f f . . . . .
-                `], 200, characterAnimations.rule(Predicate.MovingUp))
-    characterAnimations.loopFrames(wiz, [img`
-            . . . . . . c c c . . . . . . .
-            . . . . . . c 5 b c . . . . . .
-            . . . . c c c 5 5 c c c . . . .
-            . . c c c c 5 5 5 5 c b c c . .
-            . c b b 5 b 5 5 5 5 b 5 b b c .
-            . c b 5 5 b b 5 5 b b 5 5 b c .
-            . . c 5 5 5 b b b b 5 5 5 f . .
-            . . f f 5 5 5 5 5 5 5 5 f f . .
-            . . f f f f f f f f f f f f . .
-            . . f f f f f f f f f f f f . .
-            . . . f f f f f f f f f f . . .
-            . . . e e f f f f f f f e . . .
-            . . e b f b 5 b b 5 b c b e . .
-            . . e e f 5 5 5 5 5 5 f e e . .
-            . . . . c b 5 5 5 5 b c . . . .
-            . . . . . f f f f f f . . . . .
-            `], 200, characterAnimations.rule(Predicate.FacingUp))
-    characterAnimations.loopFrames(wiz, [img`
-                . . . . . . . c c c . . . . . .
-                . . . . . . c b 5 c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f b f e e f b f f f . .
-                . . f f f 1 f b b f 1 f f f . .
-                . . . f f b b b b b b f f . . .
-                . . . e e f e e e e f e e . . .
-                . . e b c b 5 b b 5 b f b e . .
-                . . e e f 5 5 5 5 5 5 f e e . .
-                . . . . c b 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . c c . . . . . . . .
-                . . . . . . c 5 c . . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f b f e e f b f f f . .
-                . . f f f 1 f b b f 1 f f f . .
-                . . . f f b b b b e e e f . . .
-                . . e b b f e e e e b b e . . .
-                . . e e f 5 5 b b e b b e . . .
-                . . . f 5 5 5 5 5 e e c . . . .
-                . . . . f f f f f f f . . . . .
-                `, img`
-                . . . . . . c c c . . . . . . .
-                . . . . . . c 5 b c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f b f e e f b f f f . .
-                . . f f f 1 f b b f 1 f f f . .
-                . . . f f b b b b b b f f . . .
-                . . . e e f e e e e f e e . . .
-                . . e b f b 5 b b 5 b c b e . .
-                . . e e f 5 5 5 5 5 5 f e e . .
-                . . . . c b 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . . c c . . . . . .
-                . . . . . . . c 5 c . . . . . .
-                . . . . c c c 5 5 c c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f f . .
-                . . f f f b f e e f b f f f . .
-                . . f f f 1 f b b f 1 f f f . .
-                . . . f e e e b b b b f f . . .
-                . . . e b b e e e e f b b e . .
-                . . . e b b e b b 5 5 f e e . .
-                . . . . c e e 5 5 5 5 5 f . . .
-                . . . . . f f f f f f f . . . .
-                `], 200, characterAnimations.rule(Predicate.MovingDown))
-    characterAnimations.loopFrames(wiz, [img`
-            . . . . . . . c c c . . . . . .
-            . . . . . . c b 5 c . . . . . .
-            . . . . c c c 5 5 c c c . . . .
-            . . c c b c 5 5 5 5 c c c c . .
-            . c b b 5 b 5 5 5 5 b 5 b b c .
-            . c b 5 5 b b 5 5 b b 5 5 b c .
-            . . f 5 5 5 b b b b 5 5 5 c . .
-            . . f f 5 5 5 5 5 5 5 5 f f . .
-            . . f f f b f e e f b f f f . .
-            . . f f f 1 f b b f 1 f f f . .
-            . . . f f b b b b b b f f . . .
-            . . . e e f e e e e f e e . . .
-            . . e b c b 5 b b 5 b f b e . .
-            . . e e f 5 5 5 5 5 5 f e e . .
-            . . . . c b 5 5 5 5 b c . . . .
-            . . . . . f f f f f f . . . . .
-            `], 200, characterAnimations.rule(Predicate.FacingDown))
-    characterAnimations.loopFrames(wiz, [img`
-                . . . . . . . c c . . . . . . .
-                . . . . . . c 5 c . . . . . . .
-                . . . . c c 5 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . . f 5 5 5 5 5 5 5 5 f f . .
-                . . . . f e e e f b e e f f . .
-                . . . . f e b b f 1 b f f f . .
-                . . . . f b b b b b b f f . . .
-                . . . . . f e e e e f e e . . .
-                . . . . . f 5 b b e b b e . . .
-                . . . . f 5 5 5 5 e b b e . . .
-                . . . . c b 5 5 5 5 e e . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . c c . . . . . . .
-                . . . . . . c c 5 c . . . . . .
-                . . . . c c 5 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . . f 5 5 5 5 5 5 5 5 f f . .
-                . . . . f e e e f b e e f f . .
-                . . . . f e b b f 1 b f f f . .
-                . . . . f b b b b e e f f . . .
-                . . . . . f e e e b b e f . . .
-                . . . . f 5 b b e b b e . . . .
-                . . . . c 5 5 5 5 e e f . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . c c . . . . . . .
-                . . . . . . c 5 c . . . . . . .
-                . . . . c c 5 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . . f 5 5 5 5 5 5 5 5 f f . .
-                . . . . f e e e f b e e f f . .
-                . . . . f e b b f 1 b f f f . .
-                . . . . f b b b b b b f f . . .
-                . . . . . f e e e e f e e . . .
-                . . . . . f 5 b b e b b e . . .
-                . . . . f 5 5 5 5 e b b e . . .
-                . . . . c b 5 5 5 5 e e . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . c c . . . . . . .
-                . . . . . . c c 5 c . . . . . .
-                . . . . c c 5 5 5 c c c . . . .
-                . . c c c c 5 5 5 5 c b c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . c 5 5 5 b b b b 5 5 5 f . .
-                . . . f 5 5 5 5 5 5 5 5 f f . .
-                . . . . f e e e f b e e f f . .
-                . . . . f e b b f 1 b f f f . .
-                . . . . f b b b b b b f f . . .
-                . . . . . f e e e e e b b e . .
-                . . . . f 5 5 b b b e b b e . .
-                . . . . c 5 5 5 5 5 e e e . . .
-                . . . . . f f f f f f . . . . .
-                `], 200, characterAnimations.rule(Predicate.MovingLeft))
-    characterAnimations.loopFrames(wiz, [img`
-            . . . . . . . c c . . . . . . .
-            . . . . . . c 5 c . . . . . . .
-            . . . . c c 5 5 5 c c c . . . .
-            . . c c c c 5 5 5 5 c b c c . .
-            . c b b 5 b 5 5 5 5 b 5 b b c .
-            . c b 5 5 b b 5 5 b b 5 5 b c .
-            . . c 5 5 5 b b b b 5 5 5 f . .
-            . . . f 5 5 5 5 5 5 5 5 f f . .
-            . . . . f e e e f b e e f f . .
-            . . . . f e b b f 1 b f f f . .
-            . . . . f b b b b b b f f . . .
-            . . . . . f e e e e f e e . . .
-            . . . . . f 5 b b e b b e . . .
-            . . . . f 5 5 5 5 e b b e . . .
-            . . . . c b 5 5 5 5 e e . . . .
-            . . . . . f f f f f f . . . . .
-            `], 200, characterAnimations.rule(Predicate.FacingLeft))
-    characterAnimations.loopFrames(wiz, [img`
-                . . . . . . . c c . . . . . . .
-                . . . . . . . c 5 c . . . . . .
-                . . . . c c c 5 5 5 c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f . . .
-                . . f f e e b f e e e f . . . .
-                . . f f f b 1 f b b e f . . . .
-                . . . f f b b b b b b f . . . .
-                . . . e e f e e e e f . . . . .
-                . . . e b b e b b 5 f . . . . .
-                . . . e b b e 5 5 5 5 f . . . .
-                . . . . e e 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . c c . . . . . . .
-                . . . . . . c 5 c c . . . . . .
-                . . . . c c c 5 5 5 c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f . . .
-                . . f f e e b f e e e f . . . .
-                . . f f f b 1 f b b e f . . . .
-                . . . f f e e b b b b f . . . .
-                . . . f e b b e e e f . . . . .
-                . . . . e b b e b b 5 f . . . .
-                . . . . f e e 5 5 5 5 c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . c c . . . . . . .
-                . . . . . . . c 5 c . . . . . .
-                . . . . c c c 5 5 5 c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f . . .
-                . . f f e e b f e e e f . . . .
-                . . f f f b 1 f b b e f . . . .
-                . . . f f b b b b b b f . . . .
-                . . . e e f e e e e f . . . . .
-                . . . e b b e b b 5 f . . . . .
-                . . . e b b e 5 5 5 5 f . . . .
-                . . . . e e 5 5 5 5 b c . . . .
-                . . . . . f f f f f f . . . . .
-                `, img`
-                . . . . . . . . . . . . . . . .
-                . . . . . . . c c . . . . . . .
-                . . . . . . c 5 c c . . . . . .
-                . . . . c c c 5 5 5 c c . . . .
-                . . c c b c 5 5 5 5 c c c c . .
-                . c b b 5 b 5 5 5 5 b 5 b b c .
-                . c b 5 5 b b 5 5 b b 5 5 b c .
-                . . f 5 5 5 b b b b 5 5 5 c . .
-                . . f f 5 5 5 5 5 5 5 5 f . . .
-                . . f f e e b f e e e f . . . .
-                . . f f f b 1 f b b e f . . . .
-                . . . f f b b b b b b f . . . .
-                . . e b b e e e e e f . . . . .
-                . . e b b e b b b 5 5 f . . . .
-                . . . e e e 5 5 5 5 5 c . . . .
-                . . . . . f f f f f f . . . . .
-                `], 200, characterAnimations.rule(Predicate.MovingRight))
-    characterAnimations.loopFrames(wiz, [img`
-            . . . . . . . c c . . . . . . .
-            . . . . . . . c 5 c . . . . . .
-            . . . . c c c 5 5 5 c c . . . .
-            . . c c b c 5 5 5 5 c c c c . .
-            . c b b 5 b 5 5 5 5 b 5 b b c .
-            . c b 5 5 b b 5 5 b b 5 5 b c .
-            . . f 5 5 5 b b b b 5 5 5 c . .
-            . . f f 5 5 5 5 5 5 5 5 f . . .
-            . . f f e e b f e e e f . . . .
-            . . f f f b 1 f b b e f . . . .
-            . . . f f b b b b b b f . . . .
-            . . . e e f e e e e f . . . . .
-            . . . e b b e b b 5 f . . . . .
-            . . . e b b e 5 5 5 5 f . . . .
-            . . . . e e 5 5 5 5 b c . . . .
-            . . . . . f f f f f f . . . . .
-            `], 200, characterAnimations.rule(Predicate.FacingRight))
+
+    // UP
+    characterAnimations.loopFrames(wiz,
+        [
+            sprites.swamp.witchBack0,
+            sprites.swamp.witchBack1,
+            sprites.swamp.witchBack2,
+            sprites.swamp.witchBack3,
+        ], 200, characterAnimations.rule(Predicate.MovingUp))
+    
+    characterAnimations.loopFrames(wiz, [sprites.swamp.witchBack0],
+        200, characterAnimations.rule(Predicate.FacingUp))
+    
+    // DOWN
+    characterAnimations.loopFrames(wiz,
+        [
+            sprites.swamp.witchForward0,
+            sprites.swamp.witchForward1,
+            sprites.swamp.witchForward2,
+            sprites.swamp.witchForward3,
+        ], 200, characterAnimations.rule(Predicate.MovingDown))
+    
+    characterAnimations.loopFrames(wiz, [sprites.swamp.witchForward0],
+        200, characterAnimations.rule(Predicate.FacingDown))
+    
+    // LEFT
+    characterAnimations.loopFrames(wiz,
+        [
+            sprites.swamp.witchLeft0,
+            sprites.swamp.witchLeft1,
+            sprites.swamp.witchLeft2,
+            sprites.swamp.witchLeft3,
+        ], 200, characterAnimations.rule(Predicate.MovingLeft))
+    
+    characterAnimations.loopFrames(wiz, [sprites.swamp.witchLeft0],
+        200, characterAnimations.rule(Predicate.FacingLeft))
+    
+    // Right
+    characterAnimations.loopFrames(wiz,
+        [
+            sprites.swamp.witchRight0,
+            sprites.swamp.witchRight1,
+            sprites.swamp.witchRight2,
+            sprites.swamp.witchRight3,
+        ], 200, characterAnimations.rule(Predicate.MovingRight))
+    
+    characterAnimations.loopFrames(wiz, [sprites.swamp.witchRight0],
+        200, characterAnimations.rule(Predicate.FacingRight))
+    
     return wiz
 }
 
 // Render the level tiles, add player and creatues.
 function render_walls() {
-    tileUtil.forEachTileInMap(tileUtil.currentTilemap(), (column: number, row: number, location: tiles.Location) => {
-        if (tiles.tileAtLocationIsWall(location)) {
-            tiles.setTileAt(location, sprites.builtin.brick)
+    tileUtil.forEachTileInMap(LEVELS[current_level], (column: number, row: number, location: tiles.Location) => {
+        if (tiles.tileAtLocationEquals(location, sprites.builtin.brick)) {
+            tiles.setWallAt(location, true)
         } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLarge)) {
             tiles.placeOnTile(player, location)
             clearTile(location)
@@ -532,7 +233,7 @@ function render_walls() {
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object12)) {
             create_monkey(location)
         } else if (tiles.tileAtLocationEquals(location, tileUtil.object14)) {
-            create_boss(location)
+            create_hermit_crab(location)
         } else if (tiles.tileAtLocationEquals(location, sprites.dungeon.chestClosed) ||
             tiles.tileAtLocationEquals(location, sprites.dungeon.doorClosedNorth) ||
             tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
@@ -543,7 +244,7 @@ function render_walls() {
 
 // Enemy interactions
 
-scene.onHitWall(SpriteKind.Snail, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
+scene.onHitWall(SpriteKind.HermitCrab, function on_hit_wall2(sprite: Sprite, location: tiles.Location) {
     if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingUp))) {
         sprite.setVelocity(-30, 0)
     } else if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.MovingDown))) {
@@ -749,7 +450,7 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Bat, function on_on_overlap6
 })
 
 // Fireball hits SNAIL
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Snail, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.HermitCrab, function on_on_overlap7(sprite: Sprite, otherSprite: Sprite) {
     sprites.destroy(sprite)
 })
 
@@ -992,7 +693,7 @@ function create_ghost(tile: tiles.Location) {
 }
 
 // BOSS
-function create_boss(tile: tiles.Location) {
+function create(tile: tiles.Location) {
     clearTile(tile)
     let mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . .
@@ -1011,7 +712,7 @@ function create_boss(tile: tiles.Location) {
             c 5 5 5 c 4 c 5 5 5 c 4 c 5 c .
             c 5 5 5 5 c 5 5 5 5 c 4 c 5 c .
             . c c c c c c c c c . . c c c .
-            `, SpriteKind.Snail)
+            `, SpriteKind.HermitCrab)
     tiles.placeOnTile(mySprite, tile)
     mySprite.vy = 30
     mySprite.setScale(2, ScaleAnchor.Middle)
@@ -1460,7 +1161,7 @@ function create_bat(tile: tiles.Location) {
 
 // MONKEY
 function create_monkey(tile: tiles.Location) {
-    tiles.setTileAt(tile, assets.tile`transparency16`)
+    clearTile(tile)
     let mySprite = sprites.create(img`
             . . . . f f f f f . . . . . . .
             . . . f e e e e e f . . . . . .
@@ -1828,6 +1529,307 @@ function create_monkey(tile: tiles.Location) {
                 `], 200, characterAnimations.rule(Predicate.MovingLeft))
 }
 
+// BOSS
+function create_hermit_crab(tile: tiles.Location) {
+    clearTile(tile)
+    let mySprite = sprites.create(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . c c . . .
+            . . . . . . . c c c c 6 3 c . .
+            . . . . . . c 6 3 3 3 3 6 c . .
+            . . . . . c 6 6 3 3 3 3 3 3 c .
+            . . . . c 6 6 6 6 3 3 3 3 3 3 c
+            . c c c c c 6 6 c c 3 3 3 3 3 c
+            b 5 5 c 3 3 c c 5 5 c 3 3 3 c c
+            f f 5 c c c 3 c 5 f f 6 6 6 c c
+            f f 5 c c c c c 5 f f 3 3 3 3 c
+            . b 5 5 3 c 3 5 5 c 3 3 3 3 3 c
+            . c 4 4 5 5 5 5 4 c c 3 3 3 c .
+            c 4 5 5 4 4 4 4 5 5 4 c b b . .
+            c 5 5 5 c 4 c 5 5 5 c 4 c 5 c .
+            c 5 5 5 5 c 5 5 5 5 c 4 c 5 c .
+            . c c c c c c c c c . . c c c .
+            `, SpriteKind.HermitCrab)
+    tiles.placeOnTile(mySprite, tile)
+    mySprite.vy = 30
+    mySprite.setScale(2, ScaleAnchor.Middle)
+    characterAnimations.loopFrames(mySprite, [img`
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . . c 5 5 5 5 b c c 3 3 3 3 3 c
+                . . c 4 5 5 4 b 5 5 c 3 3 3 c .
+                . c 5 b 4 4 b b 5 c c b b b . .
+                . c 4 4 b 5 5 5 4 c 4 4 4 5 b .
+                . c 5 4 c 5 5 5 c 4 4 4 c 5 c .
+                . c 5 c 5 5 5 5 c 4 4 4 c c c .
+                . . c c c c c c c . . . . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . c c . . . .
+                . . . . . . c c c c 6 3 c . . .
+                . . . . . c 6 6 3 3 3 6 c . . .
+                . . . . c 6 6 3 3 3 3 3 3 c . .
+                b c c c 6 6 c c 3 3 3 3 3 3 c .
+                b 5 5 c 6 c 5 5 c 3 3 3 3 3 c .
+                f f 5 c 6 c 5 f f 6 3 3 3 c c .
+                f f 5 c c c 5 f f 6 6 6 6 c c .
+                . b 5 5 3 5 5 c 3 3 3 3 3 3 c .
+                . c 5 5 5 5 4 c c c 3 3 3 3 c .
+                . c 4 5 5 4 4 b 5 5 c 3 3 c . .
+                . c 5 b 4 4 b b 5 c b b c . . .
+                . c c 5 4 c 5 5 5 c c 5 c . . .
+                . . . c c 5 5 5 5 c c c c . . .
+                . . . . c c c c c c . . . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 6 3 3 3 6 c . .
+                . . . . . c 6 6 3 3 3 3 3 3 c .
+                . b c c c 6 6 c c 3 3 3 3 3 3 c
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . f f 5 c c c 5 f f 6 6 6 6 c c
+                . . b 5 5 3 5 5 c c c 3 3 3 3 c
+                . . c 5 5 5 5 5 b 5 5 c 3 3 3 c
+                . c 4 4 5 5 4 4 b b 5 c 3 3 c .
+                . c 5 5 b 4 4 4 b 5 5 5 b c . .
+                . c 5 5 5 4 4 4 c 5 5 5 c b . .
+                . . c c c c 4 c 5 5 5 5 c c . .
+                . . . . c c c c c c c c c c . .
+                `, img`
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . c c 5 5 5 5 4 c c 3 3 3 3 3 c
+                c 5 5 4 5 5 4 c 5 5 c 3 3 3 c .
+                b 5 4 b 4 4 4 c 5 5 5 b c c . .
+                c 4 5 5 b 4 4 c 5 5 5 c b b . .
+                c 5 5 5 c 4 c 5 5 5 5 c c 5 b .
+                c 5 5 5 5 c 4 c c c c c c 5 c .
+                . c c c c c c . . . . . c c c .
+                `], 200, characterAnimations.rule(Predicate.MovingUp))
+    characterAnimations.loopFrames(mySprite, [img`
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c b 5 5 5 5 c . .
+                . c 3 3 3 c 5 5 b 4 5 5 4 c . .
+                . . b b b c c 5 b b 4 4 b 5 c .
+                . b 5 4 4 4 c 4 5 5 5 b 4 4 c .
+                . c 5 c 4 4 4 c 5 5 5 c 4 5 c .
+                . c c c 4 4 4 c 5 5 5 5 c 5 c .
+                . . . . . . . c c c c c c c . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . c c . . . . . . . . . .
+                . . . c 3 6 c c c c . . . . . .
+                . . . c 6 3 3 3 6 6 c . . . . .
+                . . c 3 3 3 3 3 3 6 6 c . . . .
+                . c 3 3 3 3 3 3 c c 6 6 c c c b
+                . c 3 3 3 3 3 c 5 5 c 6 c 5 5 b
+                . c c 3 3 3 6 f f 5 c 6 c 5 f f
+                . c c 6 6 6 6 f f 5 c c c 5 f f
+                . c 3 3 3 3 3 3 c 5 5 3 5 5 b .
+                . c 3 3 3 3 c c c 4 5 5 5 5 c .
+                . . c 3 3 c 5 5 b 4 4 5 5 4 c .
+                . . . c b b c 5 b b 4 4 b 5 c .
+                . . . c 5 c c 5 5 5 c 4 5 c c .
+                . . . c c c c 5 5 5 5 c c . . .
+                . . . . . . c c c c c c . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 6 6 c . . . . . .
+                . c 3 3 3 3 3 3 6 6 c . . . . .
+                c 3 3 3 3 3 3 c c 6 6 c c c b .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 f f 5 c c c 5 f f .
+                c 3 3 3 3 c c c 5 5 3 5 5 b . .
+                c 3 3 3 c 5 5 b 5 5 5 5 5 c . .
+                . c 3 3 c 5 b b 4 4 5 5 4 4 c .
+                . . c b 5 5 5 b 4 4 4 b 5 5 c .
+                . . b c 5 5 5 c 4 4 4 5 5 5 c .
+                . . c c 5 5 5 5 c 4 c c c c . .
+                . . c c c c c c c c c c . . . .
+                `, img`
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c 4 5 5 5 5 c c .
+                . c 3 3 3 c 5 5 c 4 5 5 4 5 5 c
+                . . c c b 5 5 5 c 4 4 4 b 4 5 b
+                . . b b c 5 5 5 c 4 4 b 5 5 4 c
+                . b 5 c c 5 5 5 5 c 4 c 5 5 5 c
+                . c 5 c c c c c c 4 c 5 5 5 5 c
+                . c c c . . . . . c c c c c c .
+                `], 200, characterAnimations.rule(Predicate.MovingDown))
+    characterAnimations.loopFrames(mySprite, [img`
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . . c 5 5 5 5 b c c 3 3 3 3 3 c
+                . . c 4 5 5 4 b 5 5 c 3 3 3 c .
+                . c 5 b 4 4 b b 5 c c b b b . .
+                . c 4 4 b 5 5 5 4 c 4 4 4 5 b .
+                . c 5 4 c 5 5 5 c 4 4 4 c 5 c .
+                . c 5 c 5 5 5 5 c 4 4 4 c c c .
+                . . c c c c c c c . . . . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . c c . . . .
+                . . . . . . c c c c 6 3 c . . .
+                . . . . . c 6 6 3 3 3 6 c . . .
+                . . . . c 6 6 3 3 3 3 3 3 c . .
+                b c c c 6 6 c c 3 3 3 3 3 3 c .
+                b 5 5 c 6 c 5 5 c 3 3 3 3 3 c .
+                f f 5 c 6 c 5 f f 6 3 3 3 c c .
+                f f 5 c c c 5 f f 6 6 6 6 c c .
+                . b 5 5 3 5 5 c 3 3 3 3 3 3 c .
+                . c 5 5 5 5 4 c c c 3 3 3 3 c .
+                . c 4 5 5 4 4 b 5 5 c 3 3 c . .
+                . c 5 b 4 4 b b 5 c b b c . . .
+                . c c 5 4 c 5 5 5 c c 5 c . . .
+                . . . c c 5 5 5 5 c c c c . . .
+                . . . . c c c c c c . . . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 6 3 3 3 6 c . .
+                . . . . . c 6 6 3 3 3 3 3 3 c .
+                . b c c c 6 6 c c 3 3 3 3 3 3 c
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . f f 5 c c c 5 f f 6 6 6 6 c c
+                . . b 5 5 3 5 5 c c c 3 3 3 3 c
+                . . c 5 5 5 5 5 b 5 5 c 3 3 3 c
+                . c 4 4 5 5 4 4 b b 5 c 3 3 c .
+                . c 5 5 b 4 4 4 b 5 5 5 b c . .
+                . c 5 5 5 4 4 4 c 5 5 5 c b . .
+                . . c c c c 4 c 5 5 5 5 c c . .
+                . . . . c c c c c c c c c c . .
+                `, img`
+                . . . . . . . . . . . c c . . .
+                . . . . . . . c c c c 6 3 c . .
+                . . . . . . c 6 3 3 3 3 6 c . .
+                . . c c . c 6 c c 3 3 3 3 3 c .
+                . b 5 5 c 6 c 5 5 c 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 3 3 3 3 3 c
+                . f f 5 c 6 c 5 f f 6 3 3 3 c c
+                . b 5 5 3 c 3 5 5 c 6 6 6 6 c c
+                . . b 5 5 3 5 5 c 3 3 3 3 3 3 c
+                . c c 5 5 5 5 4 c c 3 3 3 3 3 c
+                c 5 5 4 5 5 4 c 5 5 c 3 3 3 c .
+                b 5 4 b 4 4 4 c 5 5 5 b c c . .
+                c 4 5 5 b 4 4 c 5 5 5 c b b . .
+                c 5 5 5 c 4 c 5 5 5 5 c c 5 b .
+                c 5 5 5 5 c 4 c c c c c c 5 c .
+                . c c c c c c . . . . . c c c .
+                `], 200, characterAnimations.rule(Predicate.MovingLeft))
+    characterAnimations.loopFrames(mySprite, [img`
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c b 5 5 5 5 c . .
+                . c 3 3 3 c 5 5 b 4 5 5 4 c . .
+                . . b b b c c 5 b b 4 4 b 5 c .
+                . b 5 4 4 4 c 4 5 5 5 b 4 4 c .
+                . c 5 c 4 4 4 c 5 5 5 c 4 5 c .
+                . c c c 4 4 4 c 5 5 5 5 c 5 c .
+                . . . . . . . c c c c c c c . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . . c c . . . . . . . . . .
+                . . . c 3 6 c c c c . . . . . .
+                . . . c 6 3 3 3 6 6 c . . . . .
+                . . c 3 3 3 3 3 3 6 6 c . . . .
+                . c 3 3 3 3 3 3 c c 6 6 c c c b
+                . c 3 3 3 3 3 c 5 5 c 6 c 5 5 b
+                . c c 3 3 3 6 f f 5 c 6 c 5 f f
+                . c c 6 6 6 6 f f 5 c c c 5 f f
+                . c 3 3 3 3 3 3 c 5 5 3 5 5 b .
+                . c 3 3 3 3 c c c 4 5 5 5 5 c .
+                . . c 3 3 c 5 5 b 4 4 5 5 4 c .
+                . . . c b b c 5 b b 4 4 b 5 c .
+                . . . c 5 c c 5 5 5 c 4 5 c c .
+                . . . c c c c 5 5 5 5 c c . . .
+                . . . . . . c c c c c c . . . .
+                `, img`
+                . . . . . . . . . . . . . . . .
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 6 6 c . . . . . .
+                . c 3 3 3 3 3 3 6 6 c . . . . .
+                c 3 3 3 3 3 3 c c 6 6 c c c b .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 f f 5 c c c 5 f f .
+                c 3 3 3 3 c c c 5 5 3 5 5 b . .
+                c 3 3 3 c 5 5 b 5 5 5 5 5 c . .
+                . c 3 3 c 5 b b 4 4 5 5 4 4 c .
+                . . c b 5 5 5 b 4 4 4 b 5 5 c .
+                . . b c 5 5 5 c 4 4 4 5 5 5 c .
+                . . c c 5 5 5 5 c 4 c c c c . .
+                . . c c c c c c c c c c . . . .
+                `, img`
+                . . . c c . . . . . . . . . . .
+                . . c 3 6 c c c c . . . . . . .
+                . . c 6 3 3 3 3 6 c . . . . . .
+                . c 3 3 3 3 3 c c 6 c . c c . .
+                c 3 3 3 3 3 c 5 5 c 6 c 5 5 b .
+                c 3 3 3 3 3 f f 5 c 6 c 5 f f .
+                c c 3 3 3 6 f f 5 c 6 c 5 f f .
+                c c 6 6 6 6 c 5 5 3 c 3 5 5 b .
+                c 3 3 3 3 3 3 c 5 5 3 5 5 b . .
+                c 3 3 3 3 3 c c 4 5 5 5 5 c c .
+                . c 3 3 3 c 5 5 c 4 5 5 4 5 5 c
+                . . c c b 5 5 5 c 4 4 4 b 4 5 b
+                . . b b c 5 5 5 c 4 4 b 5 5 4 c
+                . b 5 c c 5 5 5 5 c 4 c 5 5 5 c
+                . c 5 c c c c c c 4 c 5 5 5 5 c
+                . c c c . . . . . c c c c c c .
+                `], 200, characterAnimations.rule(Predicate.MovingRight))
+}
 
 
 function update_labels() {
@@ -1841,10 +1843,11 @@ function advance_level() {
     player.setScale(1, ScaleAnchor.Middle)
     controller.moveSprite(player, 60, 60)
     tiles.setCurrentTilemap(LEVELS[current_level])
+    //console.debug(current_level)
     render_walls()
 }
 
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function on_overlap_tile3(sprite: Sprite, location: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, (sprite: Sprite, location: tiles.Location) => {
     clearTile(location)
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
     mana += 1
@@ -1856,7 +1859,7 @@ info.onLifeZero(function on_life_zero() {
     game.gameOver(false)
 })
 
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_overlap_tile4(sprite: Sprite, location: tiles.Location) {
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, (sprite: Sprite, location: tiles.Location) => {
     if (!is_falling) {
         is_falling = true
         controller.moveSprite(sprite, 0, 0)
@@ -1879,13 +1882,12 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardHole, function on_o
 
 })
 
-scene.onHitWall(SpriteKind.Projectile, function on_hit_wall3(sprite: Sprite, location: tiles.Location) {
+scene.onHitWall(SpriteKind.Projectile, (sprite: Sprite, location: tiles.Location) => {
     if (tiles.tileAtLocationEquals(location, sprites.dungeon.stairLadder)) {
         tiles.setTileAt(location, assets.tile`transparency16`)
         music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
         tiles.setWallAt(location, false)
     }
-
 })
 
 function init_inventory() {
@@ -1954,16 +1956,15 @@ let mana = INITIAL_MANA
 let coins = 0
 let keys = 0
 let is_falling = false
-let current_level = -1
-
+let current_level = 0
 
 const LEVELS = [
+    tilemap`level_0`,
     tilemap`level 1`,
-    tilemap`level 2`,
-    tilemap`level 3`
+    tilemap`level_2`
 ]
+const player: Sprite = create_player()
 
-tiles.setCurrentTilemap(LEVELS[0])
-
-const player = sprites.create(sprites.swamp.witchForward0, SpriteKind.Player)
-controller.moveSprite(player, 50, 50)
+game.setGameOverScoringType(game.ScoringType.HighScore)
+init_inventory()
+advance_level()
