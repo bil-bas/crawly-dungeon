@@ -1,12 +1,10 @@
 {
-    "image1": {
+    "myImages.image1": {
+        "id": "myImages.image1",
         "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFBVVQAAAAAAUAAABQAAAABVAAA1AAAAUAUAADUAAABQBQAAVVVVAFAFAAA1UAUAUAUAUDVQBQBQUwBQAwAFAFAzVTUAAAAAAAAzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "key"
-    },
-    "*": {
-        "mimeType": "image/x-mkcd-f4",
-        "dataEncoding": "base64",
-        "namespace": "myImages"
     }
 }
