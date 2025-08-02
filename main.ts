@@ -84,7 +84,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, (player: Sprite, enemy: S
         } else if (type == "skeleton" && mana > 0) {
             mana -= 1
             change_floater(assets.image`key`, -1)
-        } else {
+        } else {  // Bat or shroom
             game.setGameOverMessage(false, `Killed by a ${type}!`)
             info.changeLifeBy(-1)
             change_floater(assets.image`key`, -1)
@@ -161,6 +161,9 @@ function render_walls() {
                 break
             case assets.tile`hermit crab`:
                 create_hermit_crab(location)
+                break
+             case assets.tile`shroom`:
+                create_shroom(location)
                 break
             case assets.tile`mana potion`:
                 createItem("mana potion", sprites.projectile.firework1, location)
@@ -334,6 +337,36 @@ function create_hermit_crab(tile: tiles.Location) {
     characterAnimations.loopFrames(mySprite, walk, 200, characterAnimations.rule(Predicate.MovingDown))
     characterAnimations.loopFrames(mySprite, walk, 200, characterAnimations.rule(Predicate.MovingLeft))
     characterAnimations.loopFrames(mySprite, walk, 200, characterAnimations.rule(Predicate.MovingRight))
+}
+
+
+// SHROOM
+function create_shroom(tile: tiles.Location) {
+    clearTile(tile)
+
+    let mySprite = sprites.create(sprites.swamp.mushroomFrontLeft0, SpriteKind.Enemy)
+    tiles.placeOnTile(mySprite, tile)
+    mySprite.vx = 20
+    mySprite.vy = 20
+    mySprite.setFlag(SpriteFlag.BounceOnWall, true)
+    sprites.setDataString(mySprite, "type", "shroom")
+    sprites.setDataNumber(mySprite, "life", 1)
+
+    let ne = [sprites.swamp.mushroomBackLeft0, sprites.swamp.mushroomBackLeft2, sprites.swamp.mushroomBackLeft2, sprites.swamp.mushroomBackLeft3]
+    characterAnimations.loopFrames(mySprite, ne, 200,
+        characterAnimations.rule(Predicate.MovingLeft, Predicate.MovingUp))
+    
+    let nw = [sprites.swamp.mushroomBackRight0, sprites.swamp.mushroomBackRight1, sprites.swamp.mushroomBackRight2, sprites.swamp.mushroomBackRight3]
+    characterAnimations.loopFrames(mySprite, nw, 200,
+        characterAnimations.rule(Predicate.MovingRight, Predicate.MovingUp))
+    
+    let sw = [sprites.swamp.mushroomFrontLeft0, sprites.swamp.mushroomFrontLeft2, sprites.swamp.mushroomFrontLeft2, sprites.swamp.mushroomFrontLeft3]
+    characterAnimations.loopFrames(mySprite, sw, 200,
+        characterAnimations.rule(Predicate.MovingLeft, Predicate.MovingDown))
+    
+    let se = [sprites.swamp.mushroomFrontRight0, sprites.swamp.mushroomFrontRight1, sprites.swamp.mushroomFrontRight2, sprites.swamp.mushroomFrontRight3]
+    characterAnimations.loopFrames(mySprite, se, 200,
+        characterAnimations.rule(Predicate.MovingRight, Predicate.MovingDown))
 }
 
 // BAT
